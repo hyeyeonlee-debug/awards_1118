@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Synergy Partner AM 정성평가</title>
+<style>
+:root{--acc:#0a8f4e;--acc-l:#e8f6ee;--ink:#1d2329;--sub:#5f6b76;--line:#e3e7eb;--bg:#f6f7f9;--warn:#b54708;--warn-l:#fff6e5}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+.wrap{max-width:760px;margin:0 auto;padding:28px 18px 80px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:16px}
+h1{font-size:21px;margin:0 0 4px}
+h2{font-size:17px;margin:0 0 12px}
+.muted{color:var(--sub);font-size:14px}
+.tag{display:inline-block;font-size:12px;font-weight:600;color:var(--acc);background:var(--acc-l);padding:3px 9px;border-radius:99px;margin-bottom:10px}
+ul.info{padding-left:18px;margin:10px 0 0;font-size:14px;color:#38424c}
+ul.info li{margin:3px 0}
+.names{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:12px}
+.names button{padding:12px 8px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:15px;cursor:pointer;text-align:center}
+.names button:hover{border-color:var(--acc)}
+.names button small{display:block;color:var(--sub);font-size:12px;margin-top:2px}
+.progress{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin:10px 0 4px}
+.progress>div{height:100%;background:var(--acc);transition:width .25s}
+.q{border-top:1px solid var(--line);padding:16px 0}
+.q:first-of-type{border-top:0}
+.q .t{font-weight:600;font-size:15px}
+.q .d{font-size:13px;color:var(--sub);margin:2px 0 8px}
+.anch{font-size:12px;color:var(--sub);margin:0 0 10px;padding:8px 10px;background:var(--bg);border-radius:8px}
+.anch b{color:var(--ink);font-weight:600}
+.scale{display:flex;gap:6px}
+.scale button{flex:1;padding:10px 0;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:15px;font-weight:600;cursor:pointer;color:var(--ink)}
+.scale button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.scale-l{display:flex;justify-content:space-between;font-size:11px;color:var(--sub);margin-top:4px}
+textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:9px;padding:10px;font:inherit;font-size:14px;resize:vertical}
+textarea:focus{outline:2px solid var(--acc-l);border-color:var(--acc)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:8px}
+.btn{padding:12px 20px;border-radius:10px;border:1px solid var(--line);background:#fff;font-size:15px;font-weight:600;cursor:pointer;color:var(--ink)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.hint{font-size:13px;color:var(--warn);margin-top:6px;min-height:18px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:9px 6px;text-align:left;vertical-align:top}
+th{font-size:12px;color:var(--sub);font-weight:600}
+td.n{text-align:center;white-space:nowrap}
+.note{background:var(--warn-l);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:14px}
+.ok{background:var(--acc-l);color:#05663a;border-radius:10px;padding:10px 12px;font-size:14px}
+.link{background:none;border:0;color:var(--acc);font-weight:600;cursor:pointer;padding:0;font-size:14px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.hidden{display:none}
+.pill{font-size:12px;padding:2px 8px;border-radius:99px;background:var(--bg);color:var(--sub)}
+.pill.done{background:var(--acc-l);color:#05663a}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const PARTNERS = {
+  "김만기":["예지솔루션"],
+  "김민석":["나이스코어"],
+  "박원지":["나무커뮤니케이션","플레이디"],
+  "안세준":["에이엠피엠글로벌","카페24"],
+  "이나영":["링크프라이스","차이커뮤니케이션"],
+  "이선영":["트리플하이엠"],
+  "이혜연":["엠투디지털"],
+  "장윤우":["마인드노크","인크로스","프로그레스미디어"],
+  "주리":["씨제이메조미디어"],
+  "주혁":["스마일코리아"],
+  "한경화":["NHN AD"]
+};
+const ITEMS = [
+  {t:"신규 상품·테스트 참여", d:"신상품 베타, 신규 상품 초기 집행 등에 얼마나 적극적으로 참여했나요?",
+   a:["참여하지 않거나 거절함","요청하면 참여함","먼저 나서서 참여하고 결과까지 공유함"]},
+  {t:"네이버 행사·교육 협조", d:"세미나·교육·설명회 참석, 연사·사례 발표 요청에 얼마나 협조했나요?",
+   a:["거의 참석하지 않음","필요한 경우에만 참석함","꾸준히 참석하고 발표 등에 적극 협조함"]},
+  {t:"피드백·레퍼런스 공유", d:"VOC, 상품 개선 의견, 광고주 성공 사례를 얼마나 공유했나요?",
+   a:["거의 공유하지 않음","요청하면 공유함","먼저 공유하고 내용도 구체적임"]},
+  {t:"광고주 전파·실행", d:"네이버 정책과 프로모션을 광고주에게 안내하고 실제 실행까지 이끌었나요?",
+   a:["전파가 거의 없음","안내는 하지만 실행까지는 제한적임","적극 전파하고 실제 집행까지 이어짐"]},
+  {t:"대응 품질", d:"자료·일정·이슈 요청에 얼마나 빠르고 완성도 있게 대응했나요?",
+   a:["지연이나 누락이 반복됨","대체로 기한 내에 대응함","항상 빠르고 정확함"]},
+  {t:"운영 안정성", d:"정책을 잘 지켰고, 운영·커뮤니케이션 이슈는 없었나요?",
+   a:["이슈가 반복되거나 중대한 이슈가 있었음","경미한 이슈가 있었지만 바로 개선됨","이슈가 전혀 없음"]}
+];
+const MIN_COMMENT = 10;
+// ▼ Google Apps Script 웹 앱 URL (배포 → 웹 앱 → URL 복사, .../exec 로 끝나는 주소)
+const SHEET_URL = "https://script.google.com/macros/s/YOUR-DEPLOYMENT-ID/exec";
+
+const S = { step:"intro", am:null, idx:0, answers:{}, prev:null, saving:false };
+const app = document.getElementById("app");
+const el = (h)=>{const t=document.createElement("template");t.innerHTML=h.trim();return t.content;};
+const esc = (s)=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const avg = (arr)=>arr.reduce((a,b)=>a+b,0)/arr.length;
+const fmt = (n)=>(Math.round(n*100)/100).toFixed(2);
+
+function blankAnswers(am){const o={};PARTNERS[am].forEach(p=>o[p]={scores:[0,0,0,0,0,0],comment:"",note:""});return o;}
+function complete(p){const a=S.answers[p];return a.scores.every(v=>v>=1)&&a.comment.trim().length>=MIN_COMMENT;}
+
+function render(){
+  app.innerHTML="";
+  if(S.step==="intro") renderIntro();
+  else if(S.step==="eval") renderEval();
+  else if(S.step==="review") renderReview();
+  else if(S.step==="done") renderDone();
+  window.scrollTo(0,0);
+}
+
+function renderIntro(){
+  const names = Object.keys(PARTNERS).map(n=>`<button data-n="${esc(n)}">${esc(n)}<small>${PARTNERS[n].length}개사</small></button>`).join("");
+  app.append(el(`
+  <div class="card">
+    <div class="top"><span class="tag">2026 NAVER PARTNER AWARDS</span></div>
+    <h1>Synergy Partner AM 정성평가</h1>
+    <p class="muted">Synergy Partner는 2026년 네이버와 가장 긴밀하게 협업한 파트너사에 주는 상입니다. 총점 100점 중 95점은 파트너 프로그램 참여 실적(수수료 프로모션, 퀵윈, 인증시험, 파부프, ADV 프로모션)으로 산정하고, 나머지 5점은 AM 정성평가로 반영합니다.</p>
+    <ul class="info">
+      <li><b>정량 지표로 확인되지 않는 협업도</b>를 평가해 주세요. 프로모션·퀵윈·인증 실적은 이미 반영되어 있습니다.</li>
+      <li>기준 기간: 2026년 1~10월</li>
+      <li>6개 항목을 1~5점으로 평가하고, 근거 코멘트(사례 1~2개, 협업 우수 파트너사가 되어야 하는 이유)를 적어 주세요. 판단할 기회가 없었던 항목은 3점으로 응답해 주세요.</li>
+      <li>담당 파트너사를 모두 평가해야 제출할 수 있습니다. AM 점수는 6개 항목의 평균(5점 만점)으로 반영됩니다.</li><li>제출 전에 새로고침하거나 창을 닫으면 처음부터 다시 입력해야 합니다.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>본인 이름을 선택해 주세요</h2>
+    <div class="names">${names}</div>
+  </div>`));
+  app.querySelectorAll(".names button").forEach(b=>b.onclick=()=>startAm(b.dataset.n));
+}
+
+function startAm(am){
+  if(S.am!==am){
+    S.am=am; S.answers=blankAnswers(am);
+    if(S.prev && S.prev.amName===am && S.prev.partners){
+      for(const p of PARTNERS[am]){const v=S.prev.partners[p]; if(v) S.answers[p]={scores:[...v.scores],comment:v.comment||"",note:v.note||""};}
+    }
+  }
+  S.idx=0; S.step="eval"; render();
+}
+
+function renderEval(){
+  const list=PARTNERS[S.am], p=list[S.idx], a=S.answers[p], N=list.length;
+  const qs = ITEMS.map((it,i)=>`
+    <div class="q">
+      <div class="t">${i+1}. ${esc(it.t)}</div>
+      <div class="d">${esc(it.d)}</div>
+      <div class="anch"><b>5점</b> ${esc(it.a[2])} · <b>3점</b> ${esc(it.a[1])} · <b>1점</b> ${esc(it.a[0])}</div>
+      <div class="scale" data-i="${i}">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${a.scores[i]===v?"on":""}">${v}</button>`).join("")}</div>
+      <div class="scale-l"><span>매우 미흡</span><span>보통</span><span>매우 우수</span></div>
+    </div>`).join("");
+  app.append(el(`
+  <div class="card">
+    <div class="top"><span class="tag">${esc(S.am)} · ${S.idx+1} / ${N}</span><button class="link" id="chg">이름 다시 선택</button></div>
+    <h1>${esc(p)}</h1>
+    <div class="progress"><div style="width:${(S.idx/N)*100}%"></div></div>
+    <p class="muted">${N>1?`담당 파트너사 ${N}곳을 차례로 평가합니다.`:"담당 파트너사 1곳을 평가합니다."}</p>
+  </div>
+  <div class="card">${qs}
+    <div class="q">
+      <div class="t">7. 평가 근거 코멘트 <span style="color:var(--warn)">*</span></div>
+      <div class="d">점수의 근거가 된 구체적인 사례를 1~2개 적어 주세요(시기·내용). 협업 우수 파트너사가 되어야 하는 이유를 함께 적어 주시면 심사에 도움이 됩니다.</div>
+      <textarea id="cm" placeholder="예) 8월 GFA 신규 상품 베타에 자발적으로 참여하고 성과 리포트를 공유함. 자료 요청 회신이 항상 당일 내 이루어짐.">${esc(a.comment)}</textarea>
+    </div>
+    <div class="q">
+      <div class="t">8. 기타 특이사항 <span class="muted">(선택)</span></div>
+      <div class="d">심사 시 참고할 내용(정책 위반, 주요 이슈 등)이 있다면 적어 주세요.</div>
+      <textarea id="nt" style="min-height:60px">${esc(a.note)}</textarea>
+    </div>
+    <div class="hint" id="hint"></div>
+    <div class="nav">
+      <button class="btn" id="back">${S.idx===0?"← 처음으로":"← 이전 파트너사"}</button>
+      <button class="btn pri" id="next">${S.idx===N-1?"검토하고 제출 →":"다음 파트너사 →"}</button>
+    </div>
+  </div>`));
+  app.querySelectorAll(".scale").forEach(sc=>{
+    const i=+sc.dataset.i;
+    sc.querySelectorAll("button").forEach(b=>b.onclick=()=>{a.scores[i]=+b.dataset.v;sc.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));check();});
+  });
+  const cm=document.getElementById("cm"), nt=document.getElementById("nt");
+  cm.oninput=()=>{a.comment=cm.value;check();};
+  nt.oninput=()=>{a.note=nt.value;};
+  const next=document.getElementById("next"), hint=document.getElementById("hint");
+  function check(){
+    const miss=a.scores.map((v,i)=>v?null:i+1).filter(Boolean);
+    const msgs=[];
+    if(miss.length) msgs.push(`미응답 항목: ${miss.join(", ")}번`);
+    if(a.comment.trim().length<MIN_COMMENT) msgs.push(`코멘트를 ${MIN_COMMENT}자 이상 적어 주세요`);
+    hint.textContent=msgs.join(" · ");
+    next.disabled=msgs.length>0;
+  }
+  check();
+  document.getElementById("back").onclick=()=>{if(S.idx===0){S.step="intro";}else S.idx--;render();};
+  next.onclick=()=>{if(S.idx===N-1)S.step="review";else S.idx++;render();};
+  document.getElementById("chg").onclick=()=>{S.step="intro";render();};
+}
+
+function renderReview(){
+  const list=PARTNERS[S.am];
+  const rows=list.map((p,i)=>{const a=S.answers[p];return `<tr><td><b>${esc(p)}</b><div class="muted" style="font-size:12px">${esc(a.comment)}</div></td><td class="n">${a.scores.join(" · ")}</td><td class="n"><b>${fmt(avg(a.scores))}</b></td><td class="n"><button class="link" data-i="${i}">수정</button></td></tr>`;}).join("");
+  app.append(el(`
+  <div class="card">
+    <span class="tag">${esc(S.am)} · 제출 전 확인</span>
+    <h1>평가 내용을 확인해 주세요</h1>
+    <div class="progress"><div style="width:100%"></div></div>
+    <table style="margin-top:12px"><thead><tr><th>파트너사 / 코멘트</th><th class="n">항목 1~6</th><th class="n">AM 점수</th><th></th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="muted" style="margin-top:10px">AM 점수 = 6개 항목 평균 (5점 만점)</p>
+      <div class="hint" id="hint"></div>
+    <div class="nav">
+      <button class="btn" id="back">← 이전</button>
+      <button class="btn pri" id="submit">제출하기 →</button>
+    </div>
+  </div>`));
+  app.querySelectorAll("button.link[data-i]").forEach(b=>b.onclick=()=>{S.idx=+b.dataset.i;S.step="eval";render();});
+  document.getElementById("back").onclick=()=>{S.idx=list.length-1;S.step="eval";render();};
+  document.getElementById("submit").onclick=submit;
+}
+
+async function submit(){
+  const btn=document.getElementById("submit"), hint=document.getElementById("hint");
+  if(S.saving) return; S.saving=true; btn.disabled=true; btn.textContent="제출 중…";
+  const rows=PARTNERS[S.am].map(p=>{const a=S.answers[p];return {am_name:S.am,partner:p,
+    s1:a.scores[0],s2:a.scores[1],s3:a.scores[2],s4:a.scores[3],s5:a.scores[4],s6:a.scores[5],
+    am_score:Math.round(avg(a.scores)*100)/100,comment:a.comment.trim(),note:a.note.trim()||null};});
+  try{
+    const r=await fetch(SHEET_URL,{method:"POST",body:JSON.stringify({rows})});
+    const j=await r.json().catch(()=>null);
+    if(!r.ok||!j||!j.ok) throw new Error("save failed "+r.status+" "+JSON.stringify(j));
+    S.saving=false; S.step="done"; render();
+  }catch(e){
+    S.saving=false; btn.disabled=false; btn.textContent="다시 제출";
+    hint.textContent="제출에 실패했습니다. 잠시 후 다시 시도해 주세요. 계속 안 되면 이혜연 님께 알려 주세요.";
+    console.error(e);
+  }
+}
+
+function renderDone(){
+  app.append(el(`
+  <div class="card">
+    <span class="tag">제출 완료</span>
+    <h1>${esc(S.am)} 님, 평가가 제출되었습니다</h1>
+    <div class="ok" style="margin-top:12px">담당 파트너사 ${PARTNERS[S.am].length}곳의 평가가 저장되었습니다. 내용을 고치고 싶으시면 처음부터 다시 제출해 주세요. 가장 마지막에 제출한 내용으로 반영됩니다.</div>
+    <div class="nav" style="justify-content:flex-start;margin-top:16px"><button class="btn" id="home">처음 화면으로</button></div>
+  </div>`));
+  document.getElementById("home").onclick=()=>{S.step="intro";S.am=null;render();};
+}
+
+render();
+
+</script>
+</body>
+</html>
