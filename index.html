@@ -69,22 +69,16 @@ const PARTNERS = {
   "한경화":["NHN AD"]
 };
 const ITEMS = [
-  {t:"신규 상품·테스트 참여", d:"신상품 베타, 신규 상품 초기 집행 등에 얼마나 적극적으로 참여했나요?",
-   a:["참여하지 않거나 거절함","요청하면 참여함","먼저 나서서 참여하고 결과까지 공유함"]},
-  {t:"네이버 행사·교육 협조", d:"세미나·교육·설명회 참석, 연사·사례 발표 요청에 얼마나 협조했나요?",
-   a:["거의 참석하지 않음","필요한 경우에만 참석함","꾸준히 참석하고 발표 등에 적극 협조함"]},
-  {t:"피드백·레퍼런스 공유", d:"VOC, 상품 개선 의견, 광고주 성공 사례를 얼마나 공유했나요?",
-   a:["거의 공유하지 않음","요청하면 공유함","먼저 공유하고 내용도 구체적임"]},
-  {t:"광고주 전파·실행", d:"네이버 정책과 프로모션을 광고주에게 안내하고 실제 실행까지 이끌었나요?",
-   a:["전파가 거의 없음","안내는 하지만 실행까지는 제한적임","적극 전파하고 실제 집행까지 이어짐"]},
-  {t:"대응 품질", d:"자료·일정·이슈 요청에 얼마나 빠르고 완성도 있게 대응했나요?",
-   a:["지연이나 누락이 반복됨","대체로 기한 내에 대응함","항상 빠르고 정확함"]},
-  {t:"운영 안정성", d:"정책을 잘 지켰고, 운영·커뮤니케이션 이슈는 없었나요?",
-   a:["이슈가 반복되거나 중대한 이슈가 있었음","경미한 이슈가 있었지만 바로 개선됨","이슈가 전혀 없음"]}
+  {t:"광고주 성장 협업", d:"담당 광고주의 매출 확대를 위해 AM과 얼마나 긴밀하게 협업했나요? (예: PA 컨설팅 공동 진행, 광고주 미팅·제안 협업, 신규 상품 제안과 도입, 광고주 성과 개선 액션)",
+   a:["협업 요청에 소극적이거나 참여하지 않음","AM이 요청하면 컨설팅·제안에 참여함","먼저 기회를 찾아 공동 컨설팅이나 상품 제안을 주도했고, 실제 광고주 매출 확대로 이어짐"]},
+  {t:"프로모션·정책 확산 노력", d:"네이버 프로모션 달성과 정책 정착을 위해 AM과 함께 얼마나 노력했나요? (예: 광고주 안내와 실행 독려, 자체 프로모션 운영, 사내 확산 액션) ※ 달성 결과는 정량 점수에 반영되어 있으니, 과정과 노력을 평가해 주세요.",
+   a:["안내나 실행이 거의 없음","광고주에게 안내는 하지만 추가 액션은 제한적임","자체 프로모션이나 사내 확산 같은 별도 액션까지 하며 적극적으로 확산함"]},
+  {t:"커뮤니케이션·운영 안정성", d:"자료·일정·이슈 요청에 빠르고 완성도 있게 대응했고, 정책을 지키며 운영·커뮤니케이션 이슈 없이 협업했나요?",
+   a:["지연이나 누락이 반복되거나, 정책·운영 이슈가 있었음","대체로 기한 안에 대응하고, 경미한 이슈가 있어도 바로 개선함","항상 빠르고 정확하게 대응하고, 운영 이슈가 없음"]}
 ];
 const MIN_COMMENT = 10;
 // ▼ Google Apps Script 웹 앱 URL (배포 → 웹 앱 → URL 복사, .../exec 로 끝나는 주소)
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbygWn68rqCZuJPh5hflt6euO9LIeI9UrptK9dfOZw2Qb92YOMxAezwT8Y3lLpWP65jN/exec";
+const SHEET_URL = "https://script.google.com/macros/s/YOUR-DEPLOYMENT-ID/exec";
 
 const S = { step:"intro", am:null, idx:0, answers:{}, prev:null, saving:false };
 const app = document.getElementById("app");
@@ -93,7 +87,7 @@ const esc = (s)=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">
 const avg = (arr)=>arr.reduce((a,b)=>a+b,0)/arr.length;
 const fmt = (n)=>(Math.round(n*100)/100).toFixed(2);
 
-function blankAnswers(am){const o={};PARTNERS[am].forEach(p=>o[p]={scores:[0,0,0,0,0,0],comment:"",note:""});return o;}
+function blankAnswers(am){const o={};PARTNERS[am].forEach(p=>o[p]={scores:[0,0,0],comment:"",note:""});return o;}
 function complete(p){const a=S.answers[p];return a.scores.every(v=>v>=1)&&a.comment.trim().length>=MIN_COMMENT;}
 
 function render(){
@@ -113,10 +107,10 @@ function renderIntro(){
     <h1>Synergy Partner AM 정성평가</h1>
     <p class="muted">Synergy Partner는 2026년 네이버와 가장 긴밀하게 협업한 파트너사에 주는 상입니다. 총점 100점 중 95점은 파트너 프로그램 참여 실적(수수료 프로모션, 퀵윈, 인증시험, 파부프, ADV 프로모션)으로 산정하고, 나머지 5점은 AM 정성평가로 반영합니다.</p>
     <ul class="info">
-      <li><b>정량 지표로 확인되지 않는 협업도</b>를 평가해 주세요. 프로모션·퀵윈·인증 실적은 이미 반영되어 있습니다.</li>
+      <li>담당 파트너사의 <b>AM과의 협업도</b>를 평가해 주세요. 프로모션·퀵윈·인증 실적은 이미 정량 점수에 반영되어 있습니다.</li>
       <li>기준 기간: 2026년 1~10월</li>
-      <li>6개 항목을 1~5점으로 평가하고, 근거 코멘트(사례 1~2개, 협업 우수 파트너사가 되어야 하는 이유)를 적어 주세요. 판단할 기회가 없었던 항목은 3점으로 응답해 주세요.</li>
-      <li>담당 파트너사를 모두 평가해야 제출할 수 있습니다. AM 점수는 6개 항목의 평균(5점 만점)으로 반영됩니다.</li><li>제출 전에 새로고침하거나 창을 닫으면 처음부터 다시 입력해야 합니다.</li>
+      <li>3개 항목을 1~5점으로 평가하고, 근거 코멘트(사례 1~2개, 협업 우수 파트너사가 되어야 하는 이유)를 적어 주세요. 판단할 기회가 없었던 항목은 3점으로 응답해 주세요.</li>
+      <li>담당 파트너사를 모두 평가해야 제출할 수 있습니다. AM 점수는 3개 항목의 평균(5점 만점)으로 반영됩니다.</li><li>제출 전에 새로고침하거나 창을 닫으면 처음부터 다시 입력해야 합니다.</li>
     </ul>
   </div>
   <div class="card">
@@ -155,12 +149,12 @@ function renderEval(){
   </div>
   <div class="card">${qs}
     <div class="q">
-      <div class="t">7. 평가 근거 코멘트 <span style="color:var(--warn)">*</span></div>
+      <div class="t">4. 평가 근거 코멘트 <span style="color:var(--warn)">*</span></div>
       <div class="d">점수의 근거가 된 구체적인 사례를 1~2개 적어 주세요(시기·내용). 협업 우수 파트너사가 되어야 하는 이유를 함께 적어 주시면 심사에 도움이 됩니다.</div>
-      <textarea id="cm" placeholder="예) 8월 GFA 신규 상품 베타에 자발적으로 참여하고 성과 리포트를 공유함. 자료 요청 회신이 항상 당일 내 이루어짐.">${esc(a.comment)}</textarea>
+      <textarea id="cm" placeholder="예) 6월 ○○ 광고주 PA 컨설팅을 AM과 공동 진행해 광고비 확대로 이어짐. 프로모션 기간에 자체 인센티브를 운영해 광고주 참여를 독려함.">${esc(a.comment)}</textarea>
     </div>
     <div class="q">
-      <div class="t">8. 기타 특이사항 <span class="muted">(선택)</span></div>
+      <div class="t">5. 기타 특이사항 <span class="muted">(선택)</span></div>
       <div class="d">심사 시 참고할 내용(정책 위반, 주요 이슈 등)이 있다면 적어 주세요.</div>
       <textarea id="nt" style="min-height:60px">${esc(a.note)}</textarea>
     </div>
@@ -200,8 +194,8 @@ function renderReview(){
     <span class="tag">${esc(S.am)} · 제출 전 확인</span>
     <h1>평가 내용을 확인해 주세요</h1>
     <div class="progress"><div style="width:100%"></div></div>
-    <table style="margin-top:12px"><thead><tr><th>파트너사 / 코멘트</th><th class="n">항목 1~6</th><th class="n">AM 점수</th><th></th></tr></thead><tbody>${rows}</tbody></table>
-    <p class="muted" style="margin-top:10px">AM 점수 = 6개 항목 평균 (5점 만점)</p>
+    <table style="margin-top:12px"><thead><tr><th>파트너사 / 코멘트</th><th class="n">항목 1~3</th><th class="n">AM 점수</th><th></th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="muted" style="margin-top:10px">AM 점수 = 3개 항목 평균 (5점 만점)</p>
       <div class="hint" id="hint"></div>
     <div class="nav">
       <button class="btn" id="back">← 이전</button>
@@ -217,7 +211,7 @@ async function submit(){
   const btn=document.getElementById("submit"), hint=document.getElementById("hint");
   if(S.saving) return; S.saving=true; btn.disabled=true; btn.textContent="제출 중…";
   const rows=PARTNERS[S.am].map(p=>{const a=S.answers[p];return {am_name:S.am,partner:p,
-    s1:a.scores[0],s2:a.scores[1],s3:a.scores[2],s4:a.scores[3],s5:a.scores[4],s6:a.scores[5],
+    s1:a.scores[0],s2:a.scores[1],s3:a.scores[2],
     am_score:Math.round(avg(a.scores)*100)/100,comment:a.comment.trim(),note:a.note.trim()||null};});
   try{
     const r=await fetch(SHEET_URL,{method:"POST",body:JSON.stringify({rows})});
